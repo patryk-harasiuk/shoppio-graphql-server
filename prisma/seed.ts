@@ -3,19 +3,35 @@ import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
 
-const productsCount = 5;
+const PRODUCTS_COUNT = 5;
 
-for (let i = 0; i < productsCount; i++) {
-  const name = faker.commerce.productName();
-  const slug = faker.helpers.slugify(name).toLowerCase();
-  const description = faker.commerce.productDescription();
-  const price = Number(faker.commerce.price()) * 100;
+const createCategoryAndProducts = async (
+	categoryName: string,
+	productsCount: number,
+) => {
+	const productsArray = [];
 
-  const data = { name, slug, description, price };
+	for (let i = 0; i < productsCount; i++) {
+		const name = faker.commerce.productName();
+		const slug = faker.helpers.slugify(name).toLowerCase();
+		const description = faker.commerce.productDescription();
+		const price = Number(faker.commerce.price()) * 100;
 
-  const createdProduct = await prisma.product.create({
-    data,
-  });
+		const data = { name, slug, description, price };
 
-  console.log(`Created product with id: ${createdProduct.id}`);
-}
+		productsArray.push(data);
+	}
+
+	await prisma.category.create({
+		data: {
+			name: categoryName,
+			products: {
+				create: productsArray,
+			},
+		},
+	});
+};
+
+await createCategoryAndProducts("clothing", PRODUCTS_COUNT);
+await createCategoryAndProducts("shoes", PRODUCTS_COUNT);
+await createCategoryAndProducts("accessories", PRODUCTS_COUNT);
