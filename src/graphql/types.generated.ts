@@ -1,4 +1,8 @@
-import { GraphQLResolveInfo } from "graphql";
+import {
+	GraphQLResolveInfo,
+	GraphQLScalarType,
+	GraphQLScalarTypeConfig,
+} from "graphql";
 import { Context, Mapper } from "../types.js";
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
@@ -30,25 +34,41 @@ export type Scalars = {
 	Boolean: { input: boolean; output: boolean };
 	Int: { input: number; output: number };
 	Float: { input: number; output: number };
+	DateTime: { input: Date; output: Date };
+};
+
+export type Category = {
+	__typename?: "Category";
+	id: Scalars["ID"]["output"];
+	name: Scalars["String"]["output"];
 };
 
 export type Product = {
 	__typename?: "Product";
+	categories: Array<Maybe<Category>>;
+	createdAt: Scalars["DateTime"]["output"];
 	description: Scalars["String"]["output"];
 	id: Scalars["ID"]["output"];
 	name: Scalars["String"]["output"];
 	price: Scalars["Int"]["output"];
 	slug: Scalars["String"]["output"];
+	updatedAt: Scalars["DateTime"]["output"];
 };
 
 export type Query = {
 	__typename?: "Query";
+	categories: Array<Category>;
 	product?: Maybe<Product>;
 	products: Array<Product>;
 };
 
 export type QueryproductArgs = {
 	id: Scalars["ID"]["input"];
+};
+
+export type QueryproductsArgs = {
+	first: Scalars["Int"]["input"];
+	skip?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -158,9 +178,11 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-	Product: ResolverTypeWrapper<Mapper<Product>>;
-	String: ResolverTypeWrapper<Mapper<Scalars["String"]["output"]>>;
+	Category: ResolverTypeWrapper<Mapper<Category>>;
 	ID: ResolverTypeWrapper<Mapper<Scalars["ID"]["output"]>>;
+	String: ResolverTypeWrapper<Mapper<Scalars["String"]["output"]>>;
+	DateTime: ResolverTypeWrapper<Mapper<Scalars["DateTime"]["output"]>>;
+	Product: ResolverTypeWrapper<Mapper<Product>>;
 	Int: ResolverTypeWrapper<Mapper<Scalars["Int"]["output"]>>;
 	Query: ResolverTypeWrapper<{}>;
 	Boolean: ResolverTypeWrapper<Mapper<Scalars["Boolean"]["output"]>>;
@@ -168,24 +190,48 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-	Product: Mapper<Product>;
-	String: Mapper<Scalars["String"]["output"]>;
+	Category: Mapper<Category>;
 	ID: Mapper<Scalars["ID"]["output"]>;
+	String: Mapper<Scalars["String"]["output"]>;
+	DateTime: Mapper<Scalars["DateTime"]["output"]>;
+	Product: Mapper<Product>;
 	Int: Mapper<Scalars["Int"]["output"]>;
 	Query: {};
 	Boolean: Mapper<Scalars["Boolean"]["output"]>;
 };
+
+export type CategoryResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["Category"] = ResolversParentTypes["Category"],
+> = {
+	id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+	name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface DateTimeScalarConfig
+	extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
+	name: "DateTime";
+}
 
 export type ProductResolvers<
 	ContextType = Context,
 	ParentType extends
 		ResolversParentTypes["Product"] = ResolversParentTypes["Product"],
 > = {
+	categories?: Resolver<
+		Array<Maybe<ResolversTypes["Category"]>>,
+		ParentType,
+		ContextType
+	>;
+	createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
 	description?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
 	name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	price?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
 	slug?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+	updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -194,6 +240,11 @@ export type QueryResolvers<
 	ParentType extends
 		ResolversParentTypes["Query"] = ResolversParentTypes["Query"],
 > = {
+	categories?: Resolver<
+		Array<ResolversTypes["Category"]>,
+		ParentType,
+		ContextType
+	>;
 	product?: Resolver<
 		Maybe<ResolversTypes["Product"]>,
 		ParentType,
@@ -203,11 +254,14 @@ export type QueryResolvers<
 	products?: Resolver<
 		Array<ResolversTypes["Product"]>,
 		ParentType,
-		ContextType
+		ContextType,
+		RequireFields<QueryproductsArgs, "first">
 	>;
 };
 
 export type Resolvers<ContextType = Context> = {
+	Category?: CategoryResolvers<ContextType>;
+	DateTime?: GraphQLScalarType;
 	Product?: ProductResolvers<ContextType>;
 	Query?: QueryResolvers<ContextType>;
 };

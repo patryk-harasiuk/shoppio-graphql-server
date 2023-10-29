@@ -1,8 +1,19 @@
 import type { QueryResolvers } from "./../../../types.generated";
 export const products: NonNullable<QueryResolvers["products"]> = async (
 	_parent,
-	_arg,
-	_ctx,
+	args,
+	ctx,
 ) => {
-	/* Implement Query.products resolver logic here */
+	args.first = args.first ?? 20;
+	args.skip = args.skip ?? 0;
+
+	const products = await ctx.prisma.product.findMany({
+		take: args.first,
+		skip: args.skip,
+		include: {
+			categories: true,
+		},
+	});
+
+	return products;
 };

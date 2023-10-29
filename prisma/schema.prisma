@@ -19,7 +19,7 @@ model Product {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
-    orderItems      OrderItem[] // Many-to-many relationship with OrderItem
+    orderItems  OrderItem[] // Many-to-many relationship with OrderItem
 
     categories Category[] // Many-to-many relationship with Category
 }
@@ -28,7 +28,7 @@ model Category {
     id         String    @id @default(cuid())
     name       String
 
-    products Product[]
+    products   Product[]
 }
 
 

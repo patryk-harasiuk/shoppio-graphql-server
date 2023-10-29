@@ -1,12 +1,15 @@
 extend type Query {
-  products: [Product!]!
-  product(id: ID!): Product
+	products(first: Int!, skip: Int): [Product!]!
+	product(id: ID!): Product
 }
 
 type Product {
-  id: ID!
-  name: String!
-  slug: String!
-  description: String!
-  price: Int!
+	id: ID!
+	name: String!
+	slug: String!
+	description: String!
+	price: Int!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	categories: [Category]!
 }

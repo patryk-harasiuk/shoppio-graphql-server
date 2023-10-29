@@ -9,7 +9,33 @@ export const product: NonNullable<QueryResolvers["product"]> = async (
 		where: {
 			id: arg.id,
 		},
+		include: {
+			categories: true,
+		},
 	});
 
-	return product;
+	if (!product) return null;
+
+	const {
+		createdAt,
+		description,
+		id,
+		name,
+		price,
+		slug,
+		updatedAt,
+		categories,
+	} = product;
+
+	return {
+		id,
+		name,
+		description,
+		price,
+		slug,
+		createdAt,
+		updatedAt,
+		categories,
+		// categories: [],
+	};
 };
