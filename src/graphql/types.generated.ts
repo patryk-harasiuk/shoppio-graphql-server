@@ -43,6 +43,47 @@ export type Category = {
 	name: Scalars["String"]["output"];
 };
 
+export type Mutation = {
+	__typename?: "Mutation";
+	addToOrder?: Maybe<Order>;
+	removeOrderItem?: Maybe<Order>;
+	removeOrderItems?: Maybe<Order>;
+	updateOrderItemQuantity?: Maybe<Order>;
+};
+
+export type MutationaddToOrderArgs = {
+	orderId: Scalars["ID"]["input"];
+	productId: Scalars["ID"]["input"];
+};
+
+export type MutationremoveOrderItemArgs = {
+	orderId: Scalars["ID"]["input"];
+	orderItemId: Scalars["ID"]["input"];
+};
+
+export type MutationremoveOrderItemsArgs = {
+	orderId: Scalars["ID"]["input"];
+};
+
+export type MutationupdateOrderItemQuantityArgs = {
+	orderId: Scalars["ID"]["input"];
+	orderItemId: Scalars["ID"]["input"];
+};
+
+export type Order = {
+	__typename?: "Order";
+	id: Scalars["ID"]["output"];
+	orderItems: Array<Maybe<OrderItem>>;
+	status: Scalars["String"]["output"];
+	total: Scalars["Int"]["output"];
+};
+
+export type OrderItem = {
+	__typename?: "OrderItem";
+	product: Product;
+	quantity: Scalars["Int"]["output"];
+};
+
 export type Product = {
 	__typename?: "Product";
 	categories: Array<Maybe<Category>>;
@@ -58,8 +99,14 @@ export type Product = {
 export type Query = {
 	__typename?: "Query";
 	categories: Array<Category>;
+	order?: Maybe<Order>;
 	product?: Maybe<Product>;
 	products: Array<Product>;
+	productsByCategory: Array<Product>;
+};
+
+export type QueryorderArgs = {
+	id: Scalars["ID"]["input"];
 };
 
 export type QueryproductArgs = {
@@ -67,6 +114,12 @@ export type QueryproductArgs = {
 };
 
 export type QueryproductsArgs = {
+	first: Scalars["Int"]["input"];
+	skip?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type QueryproductsByCategoryArgs = {
+	category: Scalars["String"]["input"];
 	first: Scalars["Int"]["input"];
 	skip?: InputMaybe<Scalars["Int"]["input"]>;
 };
@@ -182,8 +235,11 @@ export type ResolversTypes = {
 	ID: ResolverTypeWrapper<Mapper<Scalars["ID"]["output"]>>;
 	String: ResolverTypeWrapper<Mapper<Scalars["String"]["output"]>>;
 	DateTime: ResolverTypeWrapper<Mapper<Scalars["DateTime"]["output"]>>;
-	Product: ResolverTypeWrapper<Mapper<Product>>;
+	Mutation: ResolverTypeWrapper<{}>;
+	Order: ResolverTypeWrapper<Mapper<Order>>;
 	Int: ResolverTypeWrapper<Mapper<Scalars["Int"]["output"]>>;
+	OrderItem: ResolverTypeWrapper<Mapper<OrderItem>>;
+	Product: ResolverTypeWrapper<Mapper<Product>>;
 	Query: ResolverTypeWrapper<{}>;
 	Boolean: ResolverTypeWrapper<Mapper<Scalars["Boolean"]["output"]>>;
 };
@@ -194,8 +250,11 @@ export type ResolversParentTypes = {
 	ID: Mapper<Scalars["ID"]["output"]>;
 	String: Mapper<Scalars["String"]["output"]>;
 	DateTime: Mapper<Scalars["DateTime"]["output"]>;
-	Product: Mapper<Product>;
+	Mutation: {};
+	Order: Mapper<Order>;
 	Int: Mapper<Scalars["Int"]["output"]>;
+	OrderItem: Mapper<OrderItem>;
+	Product: Mapper<Product>;
 	Query: {};
 	Boolean: Mapper<Scalars["Boolean"]["output"]>;
 };
@@ -214,6 +273,66 @@ export interface DateTimeScalarConfig
 	extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
 	name: "DateTime";
 }
+
+export type MutationResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"],
+> = {
+	addToOrder?: Resolver<
+		Maybe<ResolversTypes["Order"]>,
+		ParentType,
+		ContextType,
+		RequireFields<MutationaddToOrderArgs, "orderId" | "productId">
+	>;
+	removeOrderItem?: Resolver<
+		Maybe<ResolversTypes["Order"]>,
+		ParentType,
+		ContextType,
+		RequireFields<MutationremoveOrderItemArgs, "orderId" | "orderItemId">
+	>;
+	removeOrderItems?: Resolver<
+		Maybe<ResolversTypes["Order"]>,
+		ParentType,
+		ContextType,
+		RequireFields<MutationremoveOrderItemsArgs, "orderId">
+	>;
+	updateOrderItemQuantity?: Resolver<
+		Maybe<ResolversTypes["Order"]>,
+		ParentType,
+		ContextType,
+		RequireFields<
+			MutationupdateOrderItemQuantityArgs,
+			"orderId" | "orderItemId"
+		>
+	>;
+};
+
+export type OrderResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["Order"] = ResolversParentTypes["Order"],
+> = {
+	id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+	orderItems?: Resolver<
+		Array<Maybe<ResolversTypes["OrderItem"]>>,
+		ParentType,
+		ContextType
+	>;
+	status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+	total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OrderItemResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["OrderItem"] = ResolversParentTypes["OrderItem"],
+> = {
+	product?: Resolver<ResolversTypes["Product"], ParentType, ContextType>;
+	quantity?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type ProductResolvers<
 	ContextType = Context,
@@ -245,6 +364,12 @@ export type QueryResolvers<
 		ParentType,
 		ContextType
 	>;
+	order?: Resolver<
+		Maybe<ResolversTypes["Order"]>,
+		ParentType,
+		ContextType,
+		RequireFields<QueryorderArgs, "id">
+	>;
 	product?: Resolver<
 		Maybe<ResolversTypes["Product"]>,
 		ParentType,
@@ -257,11 +382,20 @@ export type QueryResolvers<
 		ContextType,
 		RequireFields<QueryproductsArgs, "first">
 	>;
+	productsByCategory?: Resolver<
+		Array<ResolversTypes["Product"]>,
+		ParentType,
+		ContextType,
+		RequireFields<QueryproductsByCategoryArgs, "category" | "first">
+	>;
 };
 
 export type Resolvers<ContextType = Context> = {
 	Category?: CategoryResolvers<ContextType>;
 	DateTime?: GraphQLScalarType;
+	Mutation?: MutationResolvers<ContextType>;
+	Order?: OrderResolvers<ContextType>;
+	OrderItem?: OrderItemResolvers<ContextType>;
 	Product?: ProductResolvers<ContextType>;
 	Query?: QueryResolvers<ContextType>;
 };

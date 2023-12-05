@@ -1,5 +1,6 @@
 extend type Query {
 	products(first: Int!, skip: Int): [Product!]!
+	productsByCategory(first: Int!, category: String!, skip: Int): [Product!]!
 	product(id: ID!): Product
 }
 
