@@ -2,8 +2,8 @@ extend type Query {
 	order(id: ID!): Order
 }
 
-extend type Mutation {
-	addToOrder(orderId: ID!, productId: ID!): Order
+type Mutation {
+	addToOrder(orderId: ID, productId: ID!, quantity: Int!): Order
 	removeOrderItem(orderId: ID!, orderItemId: ID!): Order
 	removeOrderItems(orderId: ID!): Order
 	updateOrderItemQuantity(orderId: ID!, orderItemId: ID!): Order
@@ -11,7 +11,6 @@ extend type Mutation {
 
 type Order {
 	id: ID!
-	total: Int!
 	status: String!
 	orderItems: [OrderItem]!
 }

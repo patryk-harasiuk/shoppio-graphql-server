@@ -35,6 +35,7 @@ export type Scalars = {
 	Int: { input: number; output: number };
 	Float: { input: number; output: number };
 	DateTime: { input: Date; output: Date };
+	Decimal: { input: any; output: any };
 };
 
 export type Category = {
@@ -52,8 +53,9 @@ export type Mutation = {
 };
 
 export type MutationaddToOrderArgs = {
-	orderId: Scalars["ID"]["input"];
+	orderId?: InputMaybe<Scalars["ID"]["input"]>;
 	productId: Scalars["ID"]["input"];
+	quantity: Scalars["Int"]["input"];
 };
 
 export type MutationremoveOrderItemArgs = {
@@ -75,7 +77,6 @@ export type Order = {
 	id: Scalars["ID"]["output"];
 	orderItems: Array<Maybe<OrderItem>>;
 	status: Scalars["String"]["output"];
-	total: Scalars["Int"]["output"];
 };
 
 export type OrderItem = {
@@ -91,7 +92,7 @@ export type Product = {
 	description: Scalars["String"]["output"];
 	id: Scalars["ID"]["output"];
 	name: Scalars["String"]["output"];
-	price: Scalars["Int"]["output"];
+	price: Scalars["Decimal"]["output"];
 	slug: Scalars["String"]["output"];
 	updatedAt: Scalars["DateTime"]["output"];
 };
@@ -235,9 +236,10 @@ export type ResolversTypes = {
 	ID: ResolverTypeWrapper<Mapper<Scalars["ID"]["output"]>>;
 	String: ResolverTypeWrapper<Mapper<Scalars["String"]["output"]>>;
 	DateTime: ResolverTypeWrapper<Mapper<Scalars["DateTime"]["output"]>>;
+	Decimal: ResolverTypeWrapper<Mapper<Scalars["Decimal"]["output"]>>;
 	Mutation: ResolverTypeWrapper<{}>;
-	Order: ResolverTypeWrapper<Mapper<Order>>;
 	Int: ResolverTypeWrapper<Mapper<Scalars["Int"]["output"]>>;
+	Order: ResolverTypeWrapper<Mapper<Order>>;
 	OrderItem: ResolverTypeWrapper<Mapper<OrderItem>>;
 	Product: ResolverTypeWrapper<Mapper<Product>>;
 	Query: ResolverTypeWrapper<{}>;
@@ -250,9 +252,10 @@ export type ResolversParentTypes = {
 	ID: Mapper<Scalars["ID"]["output"]>;
 	String: Mapper<Scalars["String"]["output"]>;
 	DateTime: Mapper<Scalars["DateTime"]["output"]>;
+	Decimal: Mapper<Scalars["Decimal"]["output"]>;
 	Mutation: {};
-	Order: Mapper<Order>;
 	Int: Mapper<Scalars["Int"]["output"]>;
+	Order: Mapper<Order>;
 	OrderItem: Mapper<OrderItem>;
 	Product: Mapper<Product>;
 	Query: {};
@@ -274,6 +277,11 @@ export interface DateTimeScalarConfig
 	name: "DateTime";
 }
 
+export interface DecimalScalarConfig
+	extends GraphQLScalarTypeConfig<ResolversTypes["Decimal"], any> {
+	name: "Decimal";
+}
+
 export type MutationResolvers<
 	ContextType = Context,
 	ParentType extends
@@ -283,7 +291,7 @@ export type MutationResolvers<
 		Maybe<ResolversTypes["Order"]>,
 		ParentType,
 		ContextType,
-		RequireFields<MutationaddToOrderArgs, "orderId" | "productId">
+		RequireFields<MutationaddToOrderArgs, "productId" | "quantity">
 	>;
 	removeOrderItem?: Resolver<
 		Maybe<ResolversTypes["Order"]>,
@@ -320,7 +328,6 @@ export type OrderResolvers<
 		ContextType
 	>;
 	status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-	total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -348,7 +355,7 @@ export type ProductResolvers<
 	description?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
 	name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-	price?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+	price?: Resolver<ResolversTypes["Decimal"], ParentType, ContextType>;
 	slug?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -393,6 +400,7 @@ export type QueryResolvers<
 export type Resolvers<ContextType = Context> = {
 	Category?: CategoryResolvers<ContextType>;
 	DateTime?: GraphQLScalarType;
+	Decimal?: GraphQLScalarType;
 	Mutation?: MutationResolvers<ContextType>;
 	Order?: OrderResolvers<ContextType>;
 	OrderItem?: OrderItemResolvers<ContextType>;

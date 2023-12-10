@@ -21,6 +21,7 @@ const config = {
 			},
 		}),
 	},
+	config: {},
 	hooks: {
 		afterAllFileWrite: ["pnpm prettier --write"],
 	},

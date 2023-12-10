@@ -14,7 +14,7 @@ model Product {
     name        String
     slug        String
     description String
-    price       Int
+    price       Decimal 
 
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
@@ -45,8 +45,7 @@ model OrderItem {
 }
 
 model Order {
-    id         String    @id @default(uuid())
-    total      Int
-    status     String
-    products   OrderItem[]
+    id              String    @id @default(uuid())
+    status          String
+    orderItems      OrderItem[]
 }
