@@ -2,8 +2,6 @@ import type { QueryResolvers } from "./../../../types.generated";
 export const productsByCategory: NonNullable<
 	QueryResolvers["productsByCategory"]
 > = async (_parent, args, ctx) => {
-	/* Implement Query.productsByCategory resolver logic here */
-
 	args.first = args.first ?? 20;
 	args.skip = args.skip ?? 0;
 

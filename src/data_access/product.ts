@@ -1,4 +1,4 @@
-import type { PrismaClient, Product } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { db } from "../utils/db";
 
 const Products = (prismaProducts: PrismaClient["product"]) => {

@@ -1,4 +1,4 @@
-import type { PrismaClient, Category } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { db } from "../utils/db";
 
 const Categories = (prismaCategories: PrismaClient["category"]) => {

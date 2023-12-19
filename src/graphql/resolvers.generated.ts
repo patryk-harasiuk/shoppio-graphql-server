@@ -1,7 +1,6 @@
 /* This file was automatically generated. DO NOT UPDATE MANUALLY. */
 import type { Resolvers } from "./types.generated";
 import { Category } from "./schema/resolvers/Category";
-import { Decimal } from "./schema/resolvers/Decimal";
 import { addToOrder as Mutation_addToOrder } from "./schema/resolvers/Mutation/addToOrder";
 import { removeOrderItem as Mutation_removeOrderItem } from "./schema/resolvers/Mutation/removeOrderItem";
 import { removeOrderItems as Mutation_removeOrderItems } from "./schema/resolvers/Mutation/removeOrderItems";
@@ -31,7 +30,6 @@ export const resolvers: Resolvers = {
 	},
 
 	Category: Category,
-	Decimal: Decimal,
 	Order: Order,
 	OrderItem: OrderItem,
 	Product: Product,
