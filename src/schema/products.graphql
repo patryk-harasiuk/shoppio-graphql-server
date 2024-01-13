@@ -1,7 +1,7 @@
 extend type Query {
 	products(first: Int!, skip: Int): [Product!]!
 	productsByCategory(first: Int!, category: String!, skip: Int): [Product!]!
-	product(id: ID!): Product
+	product(id: ID!): GetOrderPayload!
 }
 
 type Product {
@@ -13,4 +13,15 @@ type Product {
 	createdAt: DateTime!
 	updatedAt: DateTime!
 	categories: [Category]!
+}
+
+type GetProductPayload {
+	product: Product
+	productErrors: [GetOrderError!]!
+}
+
+union GetProductError = ProductNotFound
+
+type ProductNotFound {
+	message: String!
 }

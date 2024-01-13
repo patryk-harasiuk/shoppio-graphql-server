@@ -24,6 +24,7 @@ export type Incremental<T> =
 	| {
 			[P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
 	  };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & {
 	[P in K]-?: NonNullable<T[P]>;
 };
@@ -37,16 +38,40 @@ export type Scalars = {
 	DateTime: { input: Date; output: Date };
 };
 
+export type AddToOrderError = OrderNotFound | ProductNotFound;
+
+export type AddToOrderPayload = {
+	__typename?: "AddToOrderPayload";
+	order?: Maybe<Order>;
+	orderErrors: Array<AddToOrderError>;
+};
+
 export type Category = {
 	__typename?: "Category";
 	id: Scalars["ID"]["output"];
 	name: Scalars["String"]["output"];
 };
 
+export type GetOrderError = OrderNotFound;
+
+export type GetOrderPayload = {
+	__typename?: "GetOrderPayload";
+	order?: Maybe<Order>;
+	orderErrors: Array<GetOrderError>;
+};
+
+export type GetProductError = ProductNotFound;
+
+export type GetProductPayload = {
+	__typename?: "GetProductPayload";
+	product?: Maybe<Product>;
+	productErrors: Array<GetOrderError>;
+};
+
 export type Mutation = {
 	__typename?: "Mutation";
-	addToOrder?: Maybe<Order>;
-	removeOrderItem?: Maybe<Order>;
+	addToOrder: AddToOrderPayload;
+	removeOrderItem: RemoveOrderItemPayload;
 };
 
 export type MutationaddToOrderArgs = {
@@ -73,6 +98,11 @@ export type OrderItem = {
 	quantity: Scalars["Int"]["output"];
 };
 
+export type OrderNotFound = {
+	__typename?: "OrderNotFound";
+	message: Scalars["String"]["output"];
+};
+
 export type Product = {
 	__typename?: "Product";
 	categories: Array<Maybe<Category>>;
@@ -85,11 +115,16 @@ export type Product = {
 	updatedAt: Scalars["DateTime"]["output"];
 };
 
+export type ProductNotFound = {
+	__typename?: "ProductNotFound";
+	message: Scalars["String"]["output"];
+};
+
 export type Query = {
 	__typename?: "Query";
 	categories: Array<Category>;
-	order?: Maybe<Order>;
-	product?: Maybe<Product>;
+	order: GetOrderPayload;
+	product: GetOrderPayload;
 	products: Array<Product>;
 	productsByCategory: Array<Product>;
 };
@@ -111,6 +146,14 @@ export type QueryproductsByCategoryArgs = {
 	category: Scalars["String"]["input"];
 	first: Scalars["Int"]["input"];
 	skip?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type RemoveOrderItemError = OrderNotFound | ProductNotFound;
+
+export type RemoveOrderItemPayload = {
+	__typename?: "RemoveOrderItemPayload";
+	orderErrors: Array<RemoveOrderItemError>;
+	removedItem?: Maybe<OrderItem>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -218,34 +261,150 @@ export type DirectiveResolverFn<
 	info?: GraphQLResolveInfo,
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
+	AddToOrderError:
+		| (Mapper<OrderNotFound> & { __typename: "OrderNotFound" })
+		| (Mapper<ProductNotFound> & { __typename: "ProductNotFound" });
+	GetOrderError: Mapper<OrderNotFound> & { __typename: "OrderNotFound" };
+	GetProductError: Mapper<ProductNotFound> & { __typename: "ProductNotFound" };
+	RemoveOrderItemError:
+		| (Mapper<OrderNotFound> & { __typename: "OrderNotFound" })
+		| (Mapper<ProductNotFound> & { __typename: "ProductNotFound" });
+};
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+	AddToOrderError: Mapper<
+		ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>["AddToOrderError"]>
+	>;
+	AddToOrderPayload: ResolverTypeWrapper<
+		Mapper<
+			Omit<AddToOrderPayload, "orderErrors"> & {
+				orderErrors: Array<ResolversTypes["AddToOrderError"]>;
+			}
+		>
+	>;
 	Category: ResolverTypeWrapper<Mapper<Category>>;
 	ID: ResolverTypeWrapper<Mapper<Scalars["ID"]["output"]>>;
 	String: ResolverTypeWrapper<Mapper<Scalars["String"]["output"]>>;
 	DateTime: ResolverTypeWrapper<Mapper<Scalars["DateTime"]["output"]>>;
+	GetOrderError: Mapper<
+		ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>["GetOrderError"]>
+	>;
+	GetOrderPayload: ResolverTypeWrapper<
+		Mapper<
+			Omit<GetOrderPayload, "orderErrors"> & {
+				orderErrors: Array<ResolversTypes["GetOrderError"]>;
+			}
+		>
+	>;
+	GetProductError: Mapper<
+		ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>["GetProductError"]>
+	>;
+	GetProductPayload: ResolverTypeWrapper<
+		Mapper<
+			Omit<GetProductPayload, "productErrors"> & {
+				productErrors: Array<ResolversTypes["GetOrderError"]>;
+			}
+		>
+	>;
 	Mutation: ResolverTypeWrapper<{}>;
 	Int: ResolverTypeWrapper<Mapper<Scalars["Int"]["output"]>>;
 	Order: ResolverTypeWrapper<Mapper<Order>>;
 	OrderItem: ResolverTypeWrapper<Mapper<OrderItem>>;
+	OrderNotFound: ResolverTypeWrapper<Mapper<OrderNotFound>>;
 	Product: ResolverTypeWrapper<Mapper<Product>>;
+	ProductNotFound: ResolverTypeWrapper<Mapper<ProductNotFound>>;
 	Query: ResolverTypeWrapper<{}>;
+	RemoveOrderItemError: Mapper<
+		ResolverTypeWrapper<
+			ResolversUnionTypes<ResolversTypes>["RemoveOrderItemError"]
+		>
+	>;
+	RemoveOrderItemPayload: ResolverTypeWrapper<
+		Mapper<
+			Omit<RemoveOrderItemPayload, "orderErrors"> & {
+				orderErrors: Array<ResolversTypes["RemoveOrderItemError"]>;
+			}
+		>
+	>;
 	Boolean: ResolverTypeWrapper<Mapper<Scalars["Boolean"]["output"]>>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+	AddToOrderError: Mapper<
+		ResolversUnionTypes<ResolversParentTypes>["AddToOrderError"]
+	>;
+	AddToOrderPayload: Mapper<
+		Omit<AddToOrderPayload, "orderErrors"> & {
+			orderErrors: Array<ResolversParentTypes["AddToOrderError"]>;
+		}
+	>;
 	Category: Mapper<Category>;
 	ID: Mapper<Scalars["ID"]["output"]>;
 	String: Mapper<Scalars["String"]["output"]>;
 	DateTime: Mapper<Scalars["DateTime"]["output"]>;
+	GetOrderError: Mapper<
+		ResolversUnionTypes<ResolversParentTypes>["GetOrderError"]
+	>;
+	GetOrderPayload: Mapper<
+		Omit<GetOrderPayload, "orderErrors"> & {
+			orderErrors: Array<ResolversParentTypes["GetOrderError"]>;
+		}
+	>;
+	GetProductError: Mapper<
+		ResolversUnionTypes<ResolversParentTypes>["GetProductError"]
+	>;
+	GetProductPayload: Mapper<
+		Omit<GetProductPayload, "productErrors"> & {
+			productErrors: Array<ResolversParentTypes["GetOrderError"]>;
+		}
+	>;
 	Mutation: {};
 	Int: Mapper<Scalars["Int"]["output"]>;
 	Order: Mapper<Order>;
 	OrderItem: Mapper<OrderItem>;
+	OrderNotFound: Mapper<OrderNotFound>;
 	Product: Mapper<Product>;
+	ProductNotFound: Mapper<ProductNotFound>;
 	Query: {};
+	RemoveOrderItemError: Mapper<
+		ResolversUnionTypes<ResolversParentTypes>["RemoveOrderItemError"]
+	>;
+	RemoveOrderItemPayload: Mapper<
+		Omit<RemoveOrderItemPayload, "orderErrors"> & {
+			orderErrors: Array<ResolversParentTypes["RemoveOrderItemError"]>;
+		}
+	>;
 	Boolean: Mapper<Scalars["Boolean"]["output"]>;
+};
+
+export type AddToOrderErrorResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["AddToOrderError"] = ResolversParentTypes["AddToOrderError"],
+> = {
+	__resolveType?: TypeResolveFn<
+		"OrderNotFound" | "ProductNotFound",
+		ParentType,
+		ContextType
+	>;
+};
+
+export type AddToOrderPayloadResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["AddToOrderPayload"] = ResolversParentTypes["AddToOrderPayload"],
+> = {
+	order?: Resolver<Maybe<ResolversTypes["Order"]>, ParentType, ContextType>;
+	orderErrors?: Resolver<
+		Array<ResolversTypes["AddToOrderError"]>,
+		ParentType,
+		ContextType
+	>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CategoryResolvers<
@@ -263,19 +422,63 @@ export interface DateTimeScalarConfig
 	name: "DateTime";
 }
 
+export type GetOrderErrorResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["GetOrderError"] = ResolversParentTypes["GetOrderError"],
+> = {
+	__resolveType?: TypeResolveFn<"OrderNotFound", ParentType, ContextType>;
+};
+
+export type GetOrderPayloadResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["GetOrderPayload"] = ResolversParentTypes["GetOrderPayload"],
+> = {
+	order?: Resolver<Maybe<ResolversTypes["Order"]>, ParentType, ContextType>;
+	orderErrors?: Resolver<
+		Array<ResolversTypes["GetOrderError"]>,
+		ParentType,
+		ContextType
+	>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GetProductErrorResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["GetProductError"] = ResolversParentTypes["GetProductError"],
+> = {
+	__resolveType?: TypeResolveFn<"ProductNotFound", ParentType, ContextType>;
+};
+
+export type GetProductPayloadResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["GetProductPayload"] = ResolversParentTypes["GetProductPayload"],
+> = {
+	product?: Resolver<Maybe<ResolversTypes["Product"]>, ParentType, ContextType>;
+	productErrors?: Resolver<
+		Array<ResolversTypes["GetOrderError"]>,
+		ParentType,
+		ContextType
+	>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<
 	ContextType = Context,
 	ParentType extends
 		ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"],
 > = {
 	addToOrder?: Resolver<
-		Maybe<ResolversTypes["Order"]>,
+		ResolversTypes["AddToOrderPayload"],
 		ParentType,
 		ContextType,
 		RequireFields<MutationaddToOrderArgs, "productId" | "quantity">
 	>;
 	removeOrderItem?: Resolver<
-		Maybe<ResolversTypes["Order"]>,
+		ResolversTypes["RemoveOrderItemPayload"],
 		ParentType,
 		ContextType,
 		RequireFields<MutationremoveOrderItemArgs, "orderId" | "orderItemId">
@@ -307,6 +510,15 @@ export type OrderItemResolvers<
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type OrderNotFoundResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["OrderNotFound"] = ResolversParentTypes["OrderNotFound"],
+> = {
+	message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ProductResolvers<
 	ContextType = Context,
 	ParentType extends
@@ -327,6 +539,15 @@ export type ProductResolvers<
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ProductNotFoundResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["ProductNotFound"] = ResolversParentTypes["ProductNotFound"],
+> = {
+	message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<
 	ContextType = Context,
 	ParentType extends
@@ -338,13 +559,13 @@ export type QueryResolvers<
 		ContextType
 	>;
 	order?: Resolver<
-		Maybe<ResolversTypes["Order"]>,
+		ResolversTypes["GetOrderPayload"],
 		ParentType,
 		ContextType,
 		RequireFields<QueryorderArgs, "id">
 	>;
 	product?: Resolver<
-		Maybe<ResolversTypes["Product"]>,
+		ResolversTypes["GetOrderPayload"],
 		ParentType,
 		ContextType,
 		RequireFields<QueryproductArgs, "id">
@@ -363,12 +584,52 @@ export type QueryResolvers<
 	>;
 };
 
+export type RemoveOrderItemErrorResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["RemoveOrderItemError"] = ResolversParentTypes["RemoveOrderItemError"],
+> = {
+	__resolveType?: TypeResolveFn<
+		"OrderNotFound" | "ProductNotFound",
+		ParentType,
+		ContextType
+	>;
+};
+
+export type RemoveOrderItemPayloadResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["RemoveOrderItemPayload"] = ResolversParentTypes["RemoveOrderItemPayload"],
+> = {
+	orderErrors?: Resolver<
+		Array<ResolversTypes["RemoveOrderItemError"]>,
+		ParentType,
+		ContextType
+	>;
+	removedItem?: Resolver<
+		Maybe<ResolversTypes["OrderItem"]>,
+		ParentType,
+		ContextType
+	>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = Context> = {
+	AddToOrderError?: AddToOrderErrorResolvers<ContextType>;
+	AddToOrderPayload?: AddToOrderPayloadResolvers<ContextType>;
 	Category?: CategoryResolvers<ContextType>;
 	DateTime?: GraphQLScalarType;
+	GetOrderError?: GetOrderErrorResolvers<ContextType>;
+	GetOrderPayload?: GetOrderPayloadResolvers<ContextType>;
+	GetProductError?: GetProductErrorResolvers<ContextType>;
+	GetProductPayload?: GetProductPayloadResolvers<ContextType>;
 	Mutation?: MutationResolvers<ContextType>;
 	Order?: OrderResolvers<ContextType>;
 	OrderItem?: OrderItemResolvers<ContextType>;
+	OrderNotFound?: OrderNotFoundResolvers<ContextType>;
 	Product?: ProductResolvers<ContextType>;
+	ProductNotFound?: ProductNotFoundResolvers<ContextType>;
 	Query?: QueryResolvers<ContextType>;
+	RemoveOrderItemError?: RemoveOrderItemErrorResolvers<ContextType>;
+	RemoveOrderItemPayload?: RemoveOrderItemPayloadResolvers<ContextType>;
 };
