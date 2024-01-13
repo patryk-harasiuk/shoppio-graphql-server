@@ -93,6 +93,7 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 						productId,
 					},
 				},
+				include: { product: { include: { categories: true } } },
 			});
 
 			return removedItem;
