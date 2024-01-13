@@ -84,6 +84,19 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 
 			return currentOrder;
 		},
+
+		async remove(orderId: string, productId: string) {
+			const removedItem = await db.orderItem.delete({
+				where: {
+					orderId_productId: {
+						orderId,
+						productId,
+					},
+				},
+			});
+
+			return removedItem;
+		},
 	});
 };
 

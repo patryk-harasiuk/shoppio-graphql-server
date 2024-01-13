@@ -3,8 +3,6 @@ import type { Resolvers } from "./types.generated";
 import { Category } from "./schema/resolvers/Category";
 import { addToOrder as Mutation_addToOrder } from "./schema/resolvers/Mutation/addToOrder";
 import { removeOrderItem as Mutation_removeOrderItem } from "./schema/resolvers/Mutation/removeOrderItem";
-import { removeOrderItems as Mutation_removeOrderItems } from "./schema/resolvers/Mutation/removeOrderItems";
-import { updateOrderItemQuantity as Mutation_updateOrderItemQuantity } from "./schema/resolvers/Mutation/updateOrderItemQuantity";
 import { Order } from "./schema/resolvers/Order";
 import { OrderItem } from "./schema/resolvers/OrderItem";
 import { Product } from "./schema/resolvers/Product";
@@ -25,8 +23,6 @@ export const resolvers: Resolvers = {
 	Mutation: {
 		addToOrder: Mutation_addToOrder,
 		removeOrderItem: Mutation_removeOrderItem,
-		removeOrderItems: Mutation_removeOrderItems,
-		updateOrderItemQuantity: Mutation_updateOrderItemQuantity,
 	},
 
 	Category: Category,
