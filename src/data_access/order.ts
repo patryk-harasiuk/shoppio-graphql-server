@@ -1,5 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 import { db } from "../utils/db";
+import { Nullable } from "../types";
 
 const Orders = (prismaOrders: PrismaClient["order"]) => {
 	return Object.assign(prismaOrders, {
@@ -19,13 +20,7 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 			return order;
 		},
 
-		async add(productId: string, quantity: number, orderId?: string) {
-			const product = await db.product.findFirst({ where: { id: productId } });
-
-			if (!product) {
-				throw new Error(`Product with ${productId} id does not exist`);
-			}
-
+		async add(productId: string, quantity: number, orderId?: Nullable<string>) {
 			if (!orderId) {
 				const newOrder = await db.order.create({
 					data: {

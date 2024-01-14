@@ -1,24 +1,15 @@
+import { getProductsByCategory } from "../../../../services/product";
 import type { QueryResolvers } from "./../../../types.generated";
 export const productsByCategory: NonNullable<
 	QueryResolvers["productsByCategory"]
 > = async (_parent, args, ctx) => {
-	args.first = args.first ?? 20;
-	args.skip = args.skip ?? 0;
+	const { category, first, skip } = args;
 
-	const products = await ctx.prisma.product.findMany({
-		take: args.first,
-		skip: args.skip,
-		include: {
-			categories: true,
-		},
-		where: {
-			categories: {
-				some: {
-					name: args.category,
-				},
-			},
-		},
-	});
+	try {
+		const result = await getProductsByCategory(category, first, skip ?? 0);
 
-	return products;
+		return result;
+	} catch (error) {
+		return [];
+	}
 };

@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
@@ -16,6 +16,7 @@ const createCategoryAndProducts = async (
 		const slug = faker.helpers.slugify(name).toLowerCase();
 		const description = faker.commerce.productDescription();
 		const price = Number(faker.commerce.price()) * 100;
+		// const price = new Prisma.Decimal(faker.commerce.price())
 
 		const data = { name, slug, description, price };
 

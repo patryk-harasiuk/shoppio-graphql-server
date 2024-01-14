@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import { Nullable } from "../types";
 import { db } from "../utils/db";
 
 const Products = (prismaProducts: PrismaClient["product"]) => {
@@ -8,6 +9,7 @@ const Products = (prismaProducts: PrismaClient["product"]) => {
 				where: {
 					id,
 				},
+				include: { categories: true },
 			});
 
 			if (!product) throw new Error(`Product with id ${id} does not exist`);
@@ -15,7 +17,7 @@ const Products = (prismaProducts: PrismaClient["product"]) => {
 			return product;
 		},
 
-		async get(first: number, skip: number) {
+		async get(first: number, skip?: Nullable<number>) {
 			const products = await db.product.findMany({
 				take: first ?? 20,
 				skip: skip ?? 0,

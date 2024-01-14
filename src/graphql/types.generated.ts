@@ -65,7 +65,7 @@ export type GetProductError = ProductNotFound;
 export type GetProductPayload = {
 	__typename?: "GetProductPayload";
 	product?: Maybe<Product>;
-	productErrors: Array<GetOrderError>;
+	productErrors: Array<GetProductError>;
 };
 
 export type Mutation = {
@@ -82,7 +82,7 @@ export type MutationaddToOrderArgs = {
 
 export type MutationremoveOrderItemArgs = {
 	orderId: Scalars["ID"]["input"];
-	orderItemId: Scalars["ID"]["input"];
+	productId: Scalars["ID"]["input"];
 };
 
 export type Order = {
@@ -124,7 +124,7 @@ export type Query = {
 	__typename?: "Query";
 	categories: Array<Category>;
 	order: GetOrderPayload;
-	product: GetOrderPayload;
+	product: GetProductPayload;
 	products: Array<Product>;
 	productsByCategory: Array<Product>;
 };
@@ -305,7 +305,7 @@ export type ResolversTypes = {
 	GetProductPayload: ResolverTypeWrapper<
 		Mapper<
 			Omit<GetProductPayload, "productErrors"> & {
-				productErrors: Array<ResolversTypes["GetOrderError"]>;
+				productErrors: Array<ResolversTypes["GetProductError"]>;
 			}
 		>
 	>;
@@ -359,7 +359,7 @@ export type ResolversParentTypes = {
 	>;
 	GetProductPayload: Mapper<
 		Omit<GetProductPayload, "productErrors"> & {
-			productErrors: Array<ResolversParentTypes["GetOrderError"]>;
+			productErrors: Array<ResolversParentTypes["GetProductError"]>;
 		}
 	>;
 	Mutation: {};
@@ -459,7 +459,7 @@ export type GetProductPayloadResolvers<
 > = {
 	product?: Resolver<Maybe<ResolversTypes["Product"]>, ParentType, ContextType>;
 	productErrors?: Resolver<
-		Array<ResolversTypes["GetOrderError"]>,
+		Array<ResolversTypes["GetProductError"]>,
 		ParentType,
 		ContextType
 	>;
@@ -481,7 +481,7 @@ export type MutationResolvers<
 		ResolversTypes["RemoveOrderItemPayload"],
 		ParentType,
 		ContextType,
-		RequireFields<MutationremoveOrderItemArgs, "orderId" | "orderItemId">
+		RequireFields<MutationremoveOrderItemArgs, "orderId" | "productId">
 	>;
 };
 
@@ -565,7 +565,7 @@ export type QueryResolvers<
 		RequireFields<QueryorderArgs, "id">
 	>;
 	product?: Resolver<
-		ResolversTypes["GetOrderPayload"],
+		ResolversTypes["GetProductPayload"],
 		ParentType,
 		ContextType,
 		RequireFields<QueryproductArgs, "id">

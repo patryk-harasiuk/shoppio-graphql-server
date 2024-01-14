@@ -1,10 +1,15 @@
 import type { QueryResolvers } from "./../../../types.generated";
+import { getCategories } from "../../../../services/category";
+
 export const categories: NonNullable<QueryResolvers["categories"]> = async (
 	_parent,
 	_arg,
-	ctx,
 ) => {
-	const categories = await ctx.prisma.category.findMany();
+	try {
+		const result = await getCategories();
 
-	return categories;
+		return result;
+	} catch {
+		return [];
+	}
 };

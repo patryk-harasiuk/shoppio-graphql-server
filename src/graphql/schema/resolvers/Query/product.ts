@@ -1,40 +1,25 @@
+import { getProductById } from "../../../../services/product";
 import type { QueryResolvers } from "./../../../types.generated";
 
 export const product: NonNullable<QueryResolvers["product"]> = async (
 	_parent,
 	arg,
-	ctx,
 ) => {
-	const product = await ctx.prisma.product.findUnique({
-		where: {
-			id: arg.id,
-		},
-		include: {
-			categories: true,
-		},
-	});
+	const { id } = arg;
 
-	if (!product) return null;
+	try {
+		const result = await getProductById(id);
 
-	const {
-		createdAt,
-		description,
-		id,
-		name,
-		price,
-		slug,
-		updatedAt,
-		categories,
-	} = product;
-
-	return {
-		id,
-		name,
-		description,
-		price,
-		slug,
-		createdAt,
-		updatedAt,
-		categories,
-	};
+		return {
+			__typename: "GetProductPayload",
+			product: result,
+			productErrors: [],
+		};
+	} catch (error) {
+		return {
+			__typename: "GetProductPayload",
+			product: null,
+			productErrors: [{ __typename: "ProductNotFound", message: "Not found" }],
+		};
+	}
 };
