@@ -38,7 +38,7 @@ export type Scalars = {
 	DateTime: { input: Date; output: Date };
 };
 
-export type AddToOrderError = OrderNotFound | ProductNotFound;
+export type AddToOrderError = InvalidOrder | OrderNotFound | ProductNotFound;
 
 export type AddToOrderPayload = {
 	__typename?: "AddToOrderPayload";
@@ -66,6 +66,11 @@ export type GetProductPayload = {
 	__typename?: "GetProductPayload";
 	product?: Maybe<Product>;
 	productErrors: Array<GetProductError>;
+};
+
+export type InvalidOrder = {
+	__typename?: "InvalidOrder";
+	message: Scalars["String"]["output"];
 };
 
 export type Mutation = {
@@ -264,6 +269,7 @@ export type DirectiveResolverFn<
 /** Mapping of union types */
 export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
 	AddToOrderError:
+		| (Mapper<InvalidOrder> & { __typename: "InvalidOrder" })
 		| (Mapper<OrderNotFound> & { __typename: "OrderNotFound" })
 		| (Mapper<ProductNotFound> & { __typename: "ProductNotFound" });
 	GetOrderError: Mapper<OrderNotFound> & { __typename: "OrderNotFound" };
@@ -309,6 +315,7 @@ export type ResolversTypes = {
 			}
 		>
 	>;
+	InvalidOrder: ResolverTypeWrapper<Mapper<InvalidOrder>>;
 	Mutation: ResolverTypeWrapper<{}>;
 	Int: ResolverTypeWrapper<Mapper<Scalars["Int"]["output"]>>;
 	Order: ResolverTypeWrapper<Mapper<Order>>;
@@ -362,6 +369,7 @@ export type ResolversParentTypes = {
 			productErrors: Array<ResolversParentTypes["GetProductError"]>;
 		}
 	>;
+	InvalidOrder: Mapper<InvalidOrder>;
 	Mutation: {};
 	Int: Mapper<Scalars["Int"]["output"]>;
 	Order: Mapper<Order>;
@@ -387,7 +395,7 @@ export type AddToOrderErrorResolvers<
 		ResolversParentTypes["AddToOrderError"] = ResolversParentTypes["AddToOrderError"],
 > = {
 	__resolveType?: TypeResolveFn<
-		"OrderNotFound" | "ProductNotFound",
+		"InvalidOrder" | "OrderNotFound" | "ProductNotFound",
 		ParentType,
 		ContextType
 	>;
@@ -463,6 +471,15 @@ export type GetProductPayloadResolvers<
 		ParentType,
 		ContextType
 	>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InvalidOrderResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["InvalidOrder"] = ResolversParentTypes["InvalidOrder"],
+> = {
+	message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -623,6 +640,7 @@ export type Resolvers<ContextType = Context> = {
 	GetOrderPayload?: GetOrderPayloadResolvers<ContextType>;
 	GetProductError?: GetProductErrorResolvers<ContextType>;
 	GetProductPayload?: GetProductPayloadResolvers<ContextType>;
+	InvalidOrder?: InvalidOrderResolvers<ContextType>;
 	Mutation?: MutationResolvers<ContextType>;
 	Order?: OrderResolvers<ContextType>;
 	OrderItem?: OrderItemResolvers<ContextType>;

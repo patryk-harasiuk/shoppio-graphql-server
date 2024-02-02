@@ -1,6 +1,7 @@
 import { products } from "../data_access/product";
 import { ApiError } from "../errors/apiError";
-import { NotFoundError, isNotFoundError } from "../errors/notFound";
+import { isNotFoundError } from "../data_access/errors";
+import { ProductNotFound } from "../errors/products";
 
 export const getProductById = async (id: string) => {
 	try {
@@ -11,7 +12,7 @@ export const getProductById = async (id: string) => {
 		return formattedResult;
 	} catch (error) {
 		if (isNotFoundError(error)) {
-			throw new NotFoundError(`Product with ${id} id was not found`);
+			throw new ProductNotFound(`Product with ${id} id was not found`);
 		}
 
 		throw new ApiError("Could not retrieve the product");

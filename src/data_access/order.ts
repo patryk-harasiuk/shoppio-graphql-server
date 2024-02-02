@@ -1,6 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 import { db } from "../utils/db";
 import { Nullable } from "../types";
+import { NotFoundError } from "./errors";
 
 const Orders = (prismaOrders: PrismaClient["order"]) => {
 	return Object.assign(prismaOrders, {
@@ -15,7 +16,7 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 				},
 			});
 
-			if (!order) throw new Error(`Order with id ${id} does not exist`);
+			if (!order) throw new NotFoundError(`Order with id ${id} does not exist`);
 
 			return order;
 		},

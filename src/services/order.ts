@@ -1,8 +1,49 @@
 import { orders } from "../data_access/order";
 import { ApiError } from "../errors/apiError";
-import { NotFoundError, isNotFoundError } from "../errors/notFound";
+import { NotFoundError, isNotFoundError } from "../data_access/errors";
 import { Nullable } from "../types";
-import { formatPriceInOrder } from "../utils/formatPrice";
+import {
+	AddToOrderError,
+	InvalidOrder,
+	OrderNotFound,
+	ProductNotFound,
+} from "../graphql/types.generated";
+import { OrderNotFound as OrderNotFoundError } from "../errors/orders";
+import { products } from "../data_access/product";
+
+export const validateAddItemToOrder = async (
+	errors: Array<AddToOrderError>,
+	productId: string,
+	orderId?: Nullable<string>,
+) => {
+	try {
+		await products.getById(productId);
+	} catch (error) {
+		if (error instanceof NotFoundError)
+			errors.push({
+				__typename: "ProductNotFound",
+				message: error.message,
+			} as ProductNotFound);
+	}
+
+	try {
+		if (orderId) {
+			const order = await orders.getById(orderId);
+
+			order.status === "completed" &&
+				errors.push({
+					__typename: "InvalidOrder",
+					message: "Cannot add to completed order",
+				} as InvalidOrder);
+		}
+	} catch (error) {
+		if (error instanceof NotFoundError)
+			errors.push({
+				__typename: "OrderNotFound",
+				message: error.message,
+			} as OrderNotFound);
+	}
+};
 
 export const getOrder = async (id: string) => {
 	try {
@@ -20,7 +61,7 @@ export const getOrder = async (id: string) => {
 		return formattedResult;
 	} catch (error) {
 		if (isNotFoundError(error)) {
-			throw new NotFoundError(`Order with ${id} id was not found`);
+			throw new OrderNotFoundError(`Order with ${id} id was not found`);
 		}
 
 		throw new ApiError("Could not retrieve the order");
@@ -46,9 +87,7 @@ export const addItemToOrder = async (
 
 		return formattedResult;
 	} catch (error) {
-		console.log(error, "errrrrOR");
-
-		throw new Error("sdas");
+		throw new ApiError("Could not add to the cart");
 	}
 };
 

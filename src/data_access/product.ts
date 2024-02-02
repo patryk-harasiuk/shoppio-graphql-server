@@ -1,6 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 import { Nullable } from "../types";
 import { db } from "../utils/db";
+import { NotFoundError } from "./errors";
 
 const Products = (prismaProducts: PrismaClient["product"]) => {
 	return Object.assign(prismaProducts, {
@@ -12,7 +13,8 @@ const Products = (prismaProducts: PrismaClient["product"]) => {
 				include: { categories: true },
 			});
 
-			if (!product) throw new Error(`Product with id ${id} does not exist`);
+			if (!product)
+				throw new NotFoundError(`Product with id ${id} does not exist`);
 
 			return product;
 		},

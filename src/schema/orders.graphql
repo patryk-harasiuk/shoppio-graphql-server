@@ -34,7 +34,11 @@ type AddToOrderPayload {
 	orderErrors: [AddToOrderError!]!
 }
 
-union AddToOrderError = OrderNotFound | ProductNotFound
+type InvalidOrder {
+	message: String!
+}
+
+union AddToOrderError = OrderNotFound | ProductNotFound | InvalidOrder
 
 type RemoveOrderItemPayload {
 	removedItem: OrderItem
