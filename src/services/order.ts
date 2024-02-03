@@ -87,7 +87,7 @@ export const addItemToOrder = async (
 
 		return formattedResult;
 	} catch (error) {
-		throw new ApiError("Could not add to the cart");
+		throw new ApiError("Could not add to the order");
 	}
 };
 
@@ -105,12 +105,6 @@ export const removeItemFromOrder = async (
 
 		return formattedResult;
 	} catch (error) {
-		console.log(error, "errrrrOR");
-
-		throw new Error("sdas");
+		throw new ApiError("Could not remove from order");
 	}
 };
-
-// addToOrder(orderId: ID, productId: ID!, quantity: Int!): AddToOrderPayload!
-// removeOrderItem(orderId: ID!, orderItemId: ID!): RemoveOrderItemPayload!
-// }

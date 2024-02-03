@@ -3,7 +3,6 @@ import type { MutationResolvers } from "./../../../types.generated";
 export const removeOrderItem: NonNullable<
 	MutationResolvers["removeOrderItem"]
 > = async (_parent, arg, _ctx) => {
-	/* Implement Mutation.removeOrderItem resolver logic here */
 	const { orderId, productId } = arg;
 
 	try {

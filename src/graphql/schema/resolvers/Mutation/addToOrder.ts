@@ -13,6 +13,18 @@ export const addToOrder: NonNullable<MutationResolvers["addToOrder"]> = async (
 ) => {
 	const { productId, quantity, orderId } = arg;
 
+	if (!quantity)
+		return {
+			__typename: "AddToOrderPayload",
+			orderErrors: [
+				{
+					__typename: "InvalidQuantity",
+					message: "Provided quantity is invalid",
+				},
+			],
+			order: null,
+		};
+
 	const errors: AddToOrderError[] = [];
 
 	await validateAddItemToOrder(errors, productId, orderId);
@@ -37,3 +49,5 @@ export const addToOrder: NonNullable<MutationResolvers["addToOrder"]> = async (
 // cloa2onur0001snx94149h9q5
 
 // cloa2onur0002snx9pjrihv2n
+
+// 74bc45ba-5e88-41e4-b647-2d081455bb01

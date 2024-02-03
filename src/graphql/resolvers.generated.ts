@@ -5,6 +5,7 @@ import { Category } from "./schema/resolvers/Category";
 import { GetOrderPayload } from "./schema/resolvers/GetOrderPayload";
 import { GetProductPayload } from "./schema/resolvers/GetProductPayload";
 import { InvalidOrder } from "./schema/resolvers/InvalidOrder";
+import { InvalidQuantity } from "./schema/resolvers/InvalidQuantity";
 import { addToOrder as Mutation_addToOrder } from "./schema/resolvers/Mutation/addToOrder";
 import { removeOrderItem as Mutation_removeOrderItem } from "./schema/resolvers/Mutation/removeOrderItem";
 import { Order } from "./schema/resolvers/Order";
@@ -37,6 +38,7 @@ export const resolvers: Resolvers = {
 	GetOrderPayload: GetOrderPayload,
 	GetProductPayload: GetProductPayload,
 	InvalidOrder: InvalidOrder,
+	InvalidQuantity: InvalidQuantity,
 	Order: Order,
 	OrderItem: OrderItem,
 	OrderNotFound: OrderNotFound,

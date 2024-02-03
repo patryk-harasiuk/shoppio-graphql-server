@@ -1,5 +1,6 @@
 import { getProductsByCategory } from "../../../../services/product";
 import type { QueryResolvers } from "./../../../types.generated";
+
 export const productsByCategory: NonNullable<
 	QueryResolvers["productsByCategory"]
 > = async (_parent, args, ctx) => {
