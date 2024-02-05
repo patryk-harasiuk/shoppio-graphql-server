@@ -1,7 +1,7 @@
 /* This file was automatically generated. DO NOT UPDATE MANUALLY. */
 import type { Resolvers } from "./types.generated";
+import { AddToOrderError } from "./order/resolvers/AddToOrderError";
 import { Category } from "./category/resolvers/Category";
-import { InvalidOrder } from "./order/resolvers/InvalidOrder";
 import { InvalidQuantity } from "./order/resolvers/InvalidQuantity";
 import { addToOrder as Mutation_addToOrder } from "./order/resolvers/Mutation/addToOrder";
 import { removeOrderItem as Mutation_removeOrderItem } from "./order/resolvers/Mutation/removeOrderItem";
@@ -33,8 +33,8 @@ export const resolvers: Resolvers = {
 		removeOrderItem: Mutation_removeOrderItem,
 	},
 
+	AddToOrderError: AddToOrderError,
 	Category: Category,
-	InvalidOrder: InvalidOrder,
 	InvalidQuantity: InvalidQuantity,
 	Order: Order,
 	OrderItem: OrderItem,

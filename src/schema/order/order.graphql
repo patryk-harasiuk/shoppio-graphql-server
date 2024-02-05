@@ -28,11 +28,11 @@ type OrderNotFound {
 	message: String!
 }
 
-type InvalidOrder {
+type InvalidQuantity {
 	message: String!
 }
 
-type InvalidQuantity {
+type AddToOrderError {
 	message: String!
 }
 
@@ -40,12 +40,7 @@ type UpdatedOrder {
 	order: Order!
 }
 
-union AddToOrderResult =
-	  UpdatedOrder
-	| InvalidOrder
-	| InvalidQuantity
-	| ProductNotFound
-	| OrderNotFound
+union AddToOrderResult = UpdatedOrder | InvalidQuantity | AddToOrderError
 
 union RemoveOrderItemResult = RemovedOrderItem | OrderNotFound | ProductNotFound
 

@@ -37,22 +37,17 @@ export type Scalars = {
 	DateTime: { input: Date; output: Date };
 };
 
-export type AddToOrderResult =
-	| InvalidOrder
-	| InvalidQuantity
-	| OrderNotFound
-	| ProductNotFound
-	| UpdatedOrder;
+export type AddToOrderError = {
+	__typename?: "AddToOrderError";
+	message: Scalars["String"]["output"];
+};
+
+export type AddToOrderResult = AddToOrderError | InvalidQuantity | UpdatedOrder;
 
 export type Category = {
 	__typename?: "Category";
 	id: Scalars["ID"]["output"];
 	name: Scalars["String"]["output"];
-};
-
-export type InvalidOrder = {
-	__typename?: "InvalidOrder";
-	message: Scalars["String"]["output"];
 };
 
 export type InvalidQuantity = {
@@ -281,10 +276,8 @@ export type DirectiveResolverFn<
 export type ResolversUnionTypes<RefType extends Record<string, unknown>> =
 	ResolversObject<{
 		AddToOrderResult:
-			| (InvalidOrder & { __typename: "InvalidOrder" })
+			| (AddToOrderError & { __typename: "AddToOrderError" })
 			| (InvalidQuantity & { __typename: "InvalidQuantity" })
-			| (OrderNotFound & { __typename: "OrderNotFound" })
-			| (ProductNotFound & { __typename: "ProductNotFound" })
 			| (UpdatedOrder & { __typename: "UpdatedOrder" });
 		OrderResult:
 			| (OrderNotFound & { __typename: "OrderNotFound" })
@@ -300,14 +293,14 @@ export type ResolversUnionTypes<RefType extends Record<string, unknown>> =
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+	AddToOrderError: ResolverTypeWrapper<AddToOrderError>;
+	String: ResolverTypeWrapper<Scalars["String"]["output"]>;
 	AddToOrderResult: ResolverTypeWrapper<
 		ResolversUnionTypes<ResolversTypes>["AddToOrderResult"]
 	>;
 	Category: ResolverTypeWrapper<Category>;
 	ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
-	String: ResolverTypeWrapper<Scalars["String"]["output"]>;
 	DateTime: ResolverTypeWrapper<Scalars["DateTime"]["output"]>;
-	InvalidOrder: ResolverTypeWrapper<InvalidOrder>;
 	InvalidQuantity: ResolverTypeWrapper<InvalidQuantity>;
 	Mutation: ResolverTypeWrapper<{}>;
 	Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
@@ -335,12 +328,12 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+	AddToOrderError: AddToOrderError;
+	String: Scalars["String"]["output"];
 	AddToOrderResult: ResolversUnionTypes<ResolversParentTypes>["AddToOrderResult"];
 	Category: Category;
 	ID: Scalars["ID"]["output"];
-	String: Scalars["String"]["output"];
 	DateTime: Scalars["DateTime"]["output"];
-	InvalidOrder: InvalidOrder;
 	InvalidQuantity: InvalidQuantity;
 	Mutation: {};
 	Int: Scalars["Int"]["output"];
@@ -360,17 +353,22 @@ export type ResolversParentTypes = ResolversObject<{
 	Boolean: Scalars["Boolean"]["output"];
 }>;
 
+export type AddToOrderErrorResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["AddToOrderError"] = ResolversParentTypes["AddToOrderError"],
+> = ResolversObject<{
+	message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type AddToOrderResultResolvers<
 	ContextType = Context,
 	ParentType extends
 		ResolversParentTypes["AddToOrderResult"] = ResolversParentTypes["AddToOrderResult"],
 > = ResolversObject<{
 	__resolveType?: TypeResolveFn<
-		| "InvalidOrder"
-		| "InvalidQuantity"
-		| "OrderNotFound"
-		| "ProductNotFound"
-		| "UpdatedOrder",
+		"AddToOrderError" | "InvalidQuantity" | "UpdatedOrder",
 		ParentType,
 		ContextType
 	>;
@@ -390,15 +388,6 @@ export interface DateTimeScalarConfig
 	extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
 	name: "DateTime";
 }
-
-export type InvalidOrderResolvers<
-	ContextType = Context,
-	ParentType extends
-		ResolversParentTypes["InvalidOrder"] = ResolversParentTypes["InvalidOrder"],
-> = ResolversObject<{
-	message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
 
 export type InvalidQuantityResolvers<
 	ContextType = Context,
@@ -600,10 +589,10 @@ export type UpdatedOrderResolvers<
 }>;
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
+	AddToOrderError?: AddToOrderErrorResolvers<ContextType>;
 	AddToOrderResult?: AddToOrderResultResolvers<ContextType>;
 	Category?: CategoryResolvers<ContextType>;
 	DateTime?: GraphQLScalarType;
-	InvalidOrder?: InvalidOrderResolvers<ContextType>;
 	InvalidQuantity?: InvalidQuantityResolvers<ContextType>;
 	Mutation?: MutationResolvers<ContextType>;
 	Order?: OrderResolvers<ContextType>;
