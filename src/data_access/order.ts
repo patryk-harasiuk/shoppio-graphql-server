@@ -48,6 +48,16 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 				return newOrder;
 			}
 
+			// const order = await db.order.findUnique({ where: { id: orderId } });
+
+			// if (!order)
+			// 	throw new NotFoundError(`Order with ${orderId} was not found`);
+
+			// const product = await db.product.findUnique({ where: { id: productId } });
+
+			// if (!product)
+			// 	throw new NotFoundError(`Product with ${productId} was not found`);
+
 			const currentOrder = await db.order.update({
 				where: {
 					id: orderId,

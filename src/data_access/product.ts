@@ -10,7 +10,6 @@ const Products = (prismaProducts: PrismaClient["product"]) => {
 				where: {
 					id,
 				},
-				include: { categories: true },
 			});
 
 			if (!product)

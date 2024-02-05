@@ -1,6 +1,6 @@
 import { products } from "../data_access/product";
 import { ApiError } from "../errors/apiError";
-import { isNotFoundError } from "../data_access/errors";
+import { NotFoundError } from "../data_access/errors";
 import { ProductNotFound } from "../errors/products";
 
 export const getProductById = async (id: string) => {
@@ -11,7 +11,7 @@ export const getProductById = async (id: string) => {
 
 		return formattedResult;
 	} catch (error) {
-		if (isNotFoundError(error)) {
+		if (error instanceof NotFoundError) {
 			throw new ProductNotFound(`Product with ${id} id was not found`);
 		}
 
@@ -51,4 +51,10 @@ export const getProductsByCategory = async (
 	} catch {
 		throw new ApiError("Could not retrieve products");
 	}
+};
+
+export const getProductCategories = async (id: string) => {
+	const result = await products.findUnique({ where: { id } }).categories();
+
+	return result || [];
 };
