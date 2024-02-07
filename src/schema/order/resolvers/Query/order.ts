@@ -1,5 +1,6 @@
 import { OrderNotFound } from "../../../../errors/orders";
 import { getOrder } from "../../../../services/order";
+import { calculateOrderTotalPrice } from "../../../../utils/calculateOrderTotalPrice";
 import type { QueryResolvers } from "./../../../types.generated";
 
 export const order: NonNullable<QueryResolvers["order"]> = async (
@@ -11,7 +12,10 @@ export const order: NonNullable<QueryResolvers["order"]> = async (
 
 		return {
 			__typename: "OrderSuccess",
-			order: result,
+			order: {
+				...result,
+				totalPrice: calculateOrderTotalPrice(result.orderItems).toString(),
+			},
 		};
 	} catch (error) {
 		if (error instanceof OrderNotFound)

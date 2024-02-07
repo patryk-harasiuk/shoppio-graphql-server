@@ -3,14 +3,15 @@ extend type Query {
 }
 
 type Mutation {
-	addToOrder(orderId: ID, productId: ID!, quantity: Int!): AddToOrderResult
-	removeOrderItem(orderId: ID!, productId: ID!): RemoveOrderItemResult
+	updateOrder(orderId: ID, productId: ID!, quantity: Int!): UpdateOrderResult
+	removeAllItemsFromOrder(orderId: ID!): RemoveAllItemsFromOrderResult
 }
 
 type Order {
 	id: ID!
 	status: String!
-	orderItems: [OrderItem]!
+	totalPrice: String!
+	orderItems: [OrderItem!]!
 }
 
 type OrderItem {
@@ -40,10 +41,12 @@ type UpdatedOrder {
 	order: Order!
 }
 
-union AddToOrderResult = UpdatedOrder | InvalidQuantity | AddToOrderError
+union UpdateOrderResult = UpdatedOrder | InvalidQuantity | AddToOrderError
 
-union RemoveOrderItemResult = RemovedOrderItem | OrderNotFound | ProductNotFound
+union RemoveAllItemsFromOrderResult =
+	  RemoveAllItemsFromOrderSuccess
+	| OrderNotFound
 
-type RemovedOrderItem {
-	removedItem: OrderItem!
+type RemoveAllItemsFromOrderSuccess {
+	message: String!
 }

@@ -1,9 +1,10 @@
 import { orders } from "../data_access/order";
 import { ApiError } from "../errors/apiError";
-import { NotFoundError } from "../data_access/errors";
+import { DataAccessError, NotFoundError } from "../data_access/errors";
 import { Nullable } from "../types";
 
 import { OrderNotFound } from "../errors/orders";
+import { AddToOrderError } from "../errors/orders";
 
 export const getOrder = async (id: string) => {
 	try {
@@ -28,13 +29,13 @@ export const getOrder = async (id: string) => {
 	}
 };
 
-export const addItemToOrder = async (
+export const updateItemOrderQuantity = async (
 	productId: string,
 	quantity: number,
 	orderId?: Nullable<string>,
 ) => {
 	try {
-		const result = await orders.add(productId, quantity, orderId);
+		const result = await orders.updateQuantity(productId, quantity, orderId);
 
 		const formattedResult = {
 			status: result.status,
@@ -47,28 +48,17 @@ export const addItemToOrder = async (
 
 		return formattedResult;
 	} catch (error) {
-		console.log(error, "error logged in service");
+		if (error instanceof NotFoundError || error instanceof DataAccessError)
+			throw new AddToOrderError(error.message);
 
 		throw new ApiError("Could not add to the order");
 	}
 };
 
-export const removeItemFromOrder = async (
-	orderId: string,
-	productId: string,
-) => {
+export const removeAllOrderItems = async (orderId: string) => {
 	try {
-		const result = await orders.remove(orderId, productId);
-
-		const formattedResult = {
-			...result,
-			product: { ...result.product, price: result.product.price.toString() },
-		};
-
-		return formattedResult;
+		await orders.removeAll(orderId);
 	} catch (error) {
-		console.log(error, "error logged");
-
-		throw new ApiError("Could not remove from order");
+		// console.log(error)
 	}
 };

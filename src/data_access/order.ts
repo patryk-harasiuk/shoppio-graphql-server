@@ -1,12 +1,12 @@
 import type { PrismaClient } from "@prisma/client";
 import { db } from "../utils/db";
 import { Nullable } from "../types";
-import { NotFoundError } from "./errors";
+import { DataAccessError, NotFoundError } from "./errors";
 
 const Orders = (prismaOrders: PrismaClient["order"]) => {
 	return Object.assign(prismaOrders, {
 		async getById(id: string) {
-			const order = await db.order.findFirst({
+			const order = await db.order.findUnique({
 				where: { id },
 
 				include: {
@@ -21,7 +21,11 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 			return order;
 		},
 
-		async add(productId: string, quantity: number, orderId?: Nullable<string>) {
+		async updateQuantity(
+			productId: string,
+			quantity: number,
+			orderId?: Nullable<string>,
+		) {
 			if (!orderId) {
 				const newOrder = await db.order.create({
 					data: {
@@ -52,6 +56,9 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 
 			if (!order)
 				throw new NotFoundError(`Order with ${orderId} was not found`);
+
+			if (order.status !== "pending")
+				throw new DataAccessError(`Order with ${orderId} has invalid status`);
 
 			const product = await db.product.findUnique({ where: { id: productId } });
 
@@ -91,18 +98,17 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 			return currentOrder;
 		},
 
-		async remove(orderId: string, productId: string) {
-			const removedItem = await db.orderItem.delete({
-				where: {
-					orderId_productId: {
-						orderId,
-						productId,
+		async removeAll(orderId: string) {
+			try {
+				await db.order.update({
+					where: { id: orderId },
+					data: {
+						orderItems: {},
 					},
-				},
-				include: { product: { include: { categories: true } } },
-			});
-
-			return removedItem;
+				});
+			} catch (error) {
+				console.log(error, "error logged in data access");
+			}
 		},
 	});
 };

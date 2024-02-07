@@ -42,8 +42,6 @@ export type AddToOrderError = {
 	message: Scalars["String"]["output"];
 };
 
-export type AddToOrderResult = AddToOrderError | InvalidQuantity | UpdatedOrder;
-
 export type Category = {
 	__typename?: "Category";
 	id: Scalars["ID"]["output"];
@@ -57,26 +55,26 @@ export type InvalidQuantity = {
 
 export type Mutation = {
 	__typename?: "Mutation";
-	addToOrder?: Maybe<AddToOrderResult>;
-	removeOrderItem?: Maybe<RemoveOrderItemResult>;
+	removeAllItemsFromOrder?: Maybe<RemoveAllItemsFromOrderResult>;
+	updateOrder?: Maybe<UpdateOrderResult>;
 };
 
-export type MutationaddToOrderArgs = {
+export type MutationremoveAllItemsFromOrderArgs = {
+	orderId: Scalars["ID"]["input"];
+};
+
+export type MutationupdateOrderArgs = {
 	orderId?: InputMaybe<Scalars["ID"]["input"]>;
 	productId: Scalars["ID"]["input"];
 	quantity: Scalars["Int"]["input"];
 };
 
-export type MutationremoveOrderItemArgs = {
-	orderId: Scalars["ID"]["input"];
-	productId: Scalars["ID"]["input"];
-};
-
 export type Order = {
 	__typename?: "Order";
 	id: Scalars["ID"]["output"];
-	orderItems: Array<Maybe<OrderItem>>;
+	orderItems: Array<OrderItem>;
 	status: Scalars["String"]["output"];
+	totalPrice: Scalars["String"]["output"];
 };
 
 export type OrderItem = {
@@ -149,15 +147,19 @@ export type QueryproductsByCategoryArgs = {
 	skip?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type RemoveOrderItemResult =
+export type RemoveAllItemsFromOrderResult =
 	| OrderNotFound
-	| ProductNotFound
-	| RemovedOrderItem;
+	| RemoveAllItemsFromOrderSuccess;
 
-export type RemovedOrderItem = {
-	__typename?: "RemovedOrderItem";
-	removedItem: OrderItem;
+export type RemoveAllItemsFromOrderSuccess = {
+	__typename?: "RemoveAllItemsFromOrderSuccess";
+	message: Scalars["String"]["output"];
 };
+
+export type UpdateOrderResult =
+	| AddToOrderError
+	| InvalidQuantity
+	| UpdatedOrder;
 
 export type UpdatedOrder = {
 	__typename?: "UpdatedOrder";
@@ -275,29 +277,27 @@ export type DirectiveResolverFn<
 /** Mapping of union types */
 export type ResolversUnionTypes<RefType extends Record<string, unknown>> =
 	ResolversObject<{
-		AddToOrderResult:
-			| (AddToOrderError & { __typename: "AddToOrderError" })
-			| (InvalidQuantity & { __typename: "InvalidQuantity" })
-			| (UpdatedOrder & { __typename: "UpdatedOrder" });
 		OrderResult:
 			| (OrderNotFound & { __typename: "OrderNotFound" })
 			| (OrderSuccess & { __typename: "OrderSuccess" });
 		ProductResult:
 			| (ProductNotFound & { __typename: "ProductNotFound" })
 			| (ProductSuccess & { __typename: "ProductSuccess" });
-		RemoveOrderItemResult:
+		RemoveAllItemsFromOrderResult:
 			| (OrderNotFound & { __typename: "OrderNotFound" })
-			| (ProductNotFound & { __typename: "ProductNotFound" })
-			| (RemovedOrderItem & { __typename: "RemovedOrderItem" });
+			| (RemoveAllItemsFromOrderSuccess & {
+					__typename: "RemoveAllItemsFromOrderSuccess";
+			  });
+		UpdateOrderResult:
+			| (AddToOrderError & { __typename: "AddToOrderError" })
+			| (InvalidQuantity & { __typename: "InvalidQuantity" })
+			| (UpdatedOrder & { __typename: "UpdatedOrder" });
 	}>;
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
 	AddToOrderError: ResolverTypeWrapper<AddToOrderError>;
 	String: ResolverTypeWrapper<Scalars["String"]["output"]>;
-	AddToOrderResult: ResolverTypeWrapper<
-		ResolversUnionTypes<ResolversTypes>["AddToOrderResult"]
-	>;
 	Category: ResolverTypeWrapper<Category>;
 	ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
 	DateTime: ResolverTypeWrapper<Scalars["DateTime"]["output"]>;
@@ -318,10 +318,13 @@ export type ResolversTypes = ResolversObject<{
 	>;
 	ProductSuccess: ResolverTypeWrapper<ProductSuccess>;
 	Query: ResolverTypeWrapper<{}>;
-	RemoveOrderItemResult: ResolverTypeWrapper<
-		ResolversUnionTypes<ResolversTypes>["RemoveOrderItemResult"]
+	RemoveAllItemsFromOrderResult: ResolverTypeWrapper<
+		ResolversUnionTypes<ResolversTypes>["RemoveAllItemsFromOrderResult"]
 	>;
-	RemovedOrderItem: ResolverTypeWrapper<RemovedOrderItem>;
+	RemoveAllItemsFromOrderSuccess: ResolverTypeWrapper<RemoveAllItemsFromOrderSuccess>;
+	UpdateOrderResult: ResolverTypeWrapper<
+		ResolversUnionTypes<ResolversTypes>["UpdateOrderResult"]
+	>;
 	UpdatedOrder: ResolverTypeWrapper<UpdatedOrder>;
 	Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
 }>;
@@ -330,7 +333,6 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
 	AddToOrderError: AddToOrderError;
 	String: Scalars["String"]["output"];
-	AddToOrderResult: ResolversUnionTypes<ResolversParentTypes>["AddToOrderResult"];
 	Category: Category;
 	ID: Scalars["ID"]["output"];
 	DateTime: Scalars["DateTime"]["output"];
@@ -347,8 +349,9 @@ export type ResolversParentTypes = ResolversObject<{
 	ProductResult: ResolversUnionTypes<ResolversParentTypes>["ProductResult"];
 	ProductSuccess: ProductSuccess;
 	Query: {};
-	RemoveOrderItemResult: ResolversUnionTypes<ResolversParentTypes>["RemoveOrderItemResult"];
-	RemovedOrderItem: RemovedOrderItem;
+	RemoveAllItemsFromOrderResult: ResolversUnionTypes<ResolversParentTypes>["RemoveAllItemsFromOrderResult"];
+	RemoveAllItemsFromOrderSuccess: RemoveAllItemsFromOrderSuccess;
+	UpdateOrderResult: ResolversUnionTypes<ResolversParentTypes>["UpdateOrderResult"];
 	UpdatedOrder: UpdatedOrder;
 	Boolean: Scalars["Boolean"]["output"];
 }>;
@@ -360,18 +363,6 @@ export type AddToOrderErrorResolvers<
 > = ResolversObject<{
 	message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type AddToOrderResultResolvers<
-	ContextType = Context,
-	ParentType extends
-		ResolversParentTypes["AddToOrderResult"] = ResolversParentTypes["AddToOrderResult"],
-> = ResolversObject<{
-	__resolveType?: TypeResolveFn<
-		"AddToOrderError" | "InvalidQuantity" | "UpdatedOrder",
-		ParentType,
-		ContextType
-	>;
 }>;
 
 export type CategoryResolvers<
@@ -403,17 +394,17 @@ export type MutationResolvers<
 	ParentType extends
 		ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"],
 > = ResolversObject<{
-	addToOrder?: Resolver<
-		Maybe<ResolversTypes["AddToOrderResult"]>,
+	removeAllItemsFromOrder?: Resolver<
+		Maybe<ResolversTypes["RemoveAllItemsFromOrderResult"]>,
 		ParentType,
 		ContextType,
-		RequireFields<MutationaddToOrderArgs, "productId" | "quantity">
+		RequireFields<MutationremoveAllItemsFromOrderArgs, "orderId">
 	>;
-	removeOrderItem?: Resolver<
-		Maybe<ResolversTypes["RemoveOrderItemResult"]>,
+	updateOrder?: Resolver<
+		Maybe<ResolversTypes["UpdateOrderResult"]>,
 		ParentType,
 		ContextType,
-		RequireFields<MutationremoveOrderItemArgs, "orderId" | "productId">
+		RequireFields<MutationupdateOrderArgs, "productId" | "quantity">
 	>;
 }>;
 
@@ -424,11 +415,12 @@ export type OrderResolvers<
 > = ResolversObject<{
 	id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
 	orderItems?: Resolver<
-		Array<Maybe<ResolversTypes["OrderItem"]>>,
+		Array<ResolversTypes["OrderItem"]>,
 		ParentType,
 		ContextType
 	>;
 	status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+	totalPrice?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -558,25 +550,37 @@ export type QueryResolvers<
 	>;
 }>;
 
-export type RemoveOrderItemResultResolvers<
+export type RemoveAllItemsFromOrderResultResolvers<
 	ContextType = Context,
 	ParentType extends
-		ResolversParentTypes["RemoveOrderItemResult"] = ResolversParentTypes["RemoveOrderItemResult"],
+		ResolversParentTypes["RemoveAllItemsFromOrderResult"] = ResolversParentTypes["RemoveAllItemsFromOrderResult"],
 > = ResolversObject<{
 	__resolveType?: TypeResolveFn<
-		"OrderNotFound" | "ProductNotFound" | "RemovedOrderItem",
+		"OrderNotFound" | "RemoveAllItemsFromOrderSuccess",
 		ParentType,
 		ContextType
 	>;
 }>;
 
-export type RemovedOrderItemResolvers<
+export type RemoveAllItemsFromOrderSuccessResolvers<
 	ContextType = Context,
 	ParentType extends
-		ResolversParentTypes["RemovedOrderItem"] = ResolversParentTypes["RemovedOrderItem"],
+		ResolversParentTypes["RemoveAllItemsFromOrderSuccess"] = ResolversParentTypes["RemoveAllItemsFromOrderSuccess"],
 > = ResolversObject<{
-	removedItem?: Resolver<ResolversTypes["OrderItem"], ParentType, ContextType>;
+	message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UpdateOrderResultResolvers<
+	ContextType = Context,
+	ParentType extends
+		ResolversParentTypes["UpdateOrderResult"] = ResolversParentTypes["UpdateOrderResult"],
+> = ResolversObject<{
+	__resolveType?: TypeResolveFn<
+		"AddToOrderError" | "InvalidQuantity" | "UpdatedOrder",
+		ParentType,
+		ContextType
+	>;
 }>;
 
 export type UpdatedOrderResolvers<
@@ -590,7 +594,6 @@ export type UpdatedOrderResolvers<
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
 	AddToOrderError?: AddToOrderErrorResolvers<ContextType>;
-	AddToOrderResult?: AddToOrderResultResolvers<ContextType>;
 	Category?: CategoryResolvers<ContextType>;
 	DateTime?: GraphQLScalarType;
 	InvalidQuantity?: InvalidQuantityResolvers<ContextType>;
@@ -605,7 +608,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
 	ProductResult?: ProductResultResolvers<ContextType>;
 	ProductSuccess?: ProductSuccessResolvers<ContextType>;
 	Query?: QueryResolvers<ContextType>;
-	RemoveOrderItemResult?: RemoveOrderItemResultResolvers<ContextType>;
-	RemovedOrderItem?: RemovedOrderItemResolvers<ContextType>;
+	RemoveAllItemsFromOrderResult?: RemoveAllItemsFromOrderResultResolvers<ContextType>;
+	RemoveAllItemsFromOrderSuccess?: RemoveAllItemsFromOrderSuccessResolvers<ContextType>;
+	UpdateOrderResult?: UpdateOrderResultResolvers<ContextType>;
 	UpdatedOrder?: UpdatedOrderResolvers<ContextType>;
 }>;
