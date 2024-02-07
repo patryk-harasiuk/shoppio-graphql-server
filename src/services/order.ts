@@ -5,6 +5,7 @@ import { Nullable } from "../types";
 
 import { OrderNotFound } from "../errors/orders";
 import { AddToOrderError } from "../errors/orders";
+import { isPrismaNotFoundError } from "../utils/isPrismaNotFoundError";
 
 export const getOrder = async (id: string) => {
 	try {
@@ -59,6 +60,10 @@ export const removeAllOrderItems = async (orderId: string) => {
 	try {
 		await orders.removeAll(orderId);
 	} catch (error) {
-		// console.log(error)
+		if (isPrismaNotFoundError(error)) {
+			throw new OrderNotFound(`Order with ${orderId} id was not found`);
+		}
+
+		throw new ApiError("Could not remove items from order");
 	}
 };

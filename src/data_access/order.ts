@@ -99,16 +99,12 @@ const Orders = (prismaOrders: PrismaClient["order"]) => {
 		},
 
 		async removeAll(orderId: string) {
-			try {
-				await db.order.update({
-					where: { id: orderId },
-					data: {
-						orderItems: {},
-					},
-				});
-			} catch (error) {
-				console.log(error, "error logged in data access");
-			}
+			await db.order.update({
+				where: { id: orderId },
+				data: {
+					orderItems: {},
+				},
+			});
 		},
 	});
 };

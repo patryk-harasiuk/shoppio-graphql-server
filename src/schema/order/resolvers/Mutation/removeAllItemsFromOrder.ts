@@ -1,3 +1,4 @@
+import { OrderNotFound } from "../../../../errors/orders";
 import { removeAllOrderItems } from "../../../../services/order";
 import type { MutationResolvers } from "./../../../types.generated";
 export const removeAllItemsFromOrder: NonNullable<
@@ -11,6 +12,11 @@ export const removeAllItemsFromOrder: NonNullable<
 			message: "success",
 		};
 	} catch (error) {
-		return null;
+		if (error instanceof OrderNotFound) {
+			return {
+				__typename: "OrderNotFound",
+				message: error.message,
+			};
+		}
 	}
 };
