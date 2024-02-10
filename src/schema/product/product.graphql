@@ -7,7 +7,6 @@ extend type Query {
 type Product {
 	id: ID!
 	name: String!
-	slug: String!
 	description: String!
 	price: String!
 	createdAt: DateTime!

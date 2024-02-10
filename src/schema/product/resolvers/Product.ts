@@ -7,7 +7,6 @@ export const Product: ProductResolvers = {
 	description: (parent) => parent.description,
 	name: (parent) => parent.name,
 	price: (parent) => parent.price,
-	slug: (parent) => parent.slug,
 	async categories({ id }) {
 		const categories = await getProductCategories(id);
 

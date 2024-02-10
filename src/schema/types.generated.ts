@@ -103,7 +103,6 @@ export type Product = {
 	id: Scalars["ID"]["output"];
 	name: Scalars["String"]["output"];
 	price: Scalars["String"]["output"];
-	slug: Scalars["String"]["output"];
 	updatedAt: Scalars["DateTime"]["output"];
 };
 
@@ -479,7 +478,6 @@ export type ProductResolvers<
 	id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
 	name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	price?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-	slug?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 	updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
 	__isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
