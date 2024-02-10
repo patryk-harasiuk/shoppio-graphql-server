@@ -49,5 +49,4 @@ model Order {
     orderItems      OrderItem[]
 }
 
-// #TODO: Migrate to PostgreSQL - then here enums can be used
 // #TODO: Add another table - PaymentStatus - one to many with Order
