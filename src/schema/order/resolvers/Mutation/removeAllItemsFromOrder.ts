@@ -1,6 +1,7 @@
 import { OrderNotFound } from "../../../../errors/orders";
 import { removeAllOrderItems } from "../../../../services/order";
 import type { MutationResolvers } from "./../../../types.generated";
+
 export const removeAllItemsFromOrder: NonNullable<
 	MutationResolvers["removeAllItemsFromOrder"]
 > = async (_parent, { orderId }, _ctx) => {

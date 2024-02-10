@@ -2,6 +2,7 @@ import { updateItemOrderQuantity } from "../../../../services/order";
 import { AddToOrderError } from "../../../../errors/orders";
 import type { MutationResolvers } from "./../../../types.generated";
 import { calculateOrderTotalPrice } from "../../../../utils/calculateOrderTotalPrice";
+
 export const updateOrder: NonNullable<
 	MutationResolvers["updateOrder"]
 > = async (_parent, { productId, quantity, orderId }, _ctx) => {
