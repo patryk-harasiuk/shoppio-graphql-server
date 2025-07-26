@@ -1,1 +1,1 @@
-unfinished gql server
+unfinished gql server in NodeJS
